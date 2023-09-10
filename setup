@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+# The follwoing will attempt to compile and install rDock
+# IMPORTANT - This script is meant to run on a Linux machine
+
+# set some colors
+CNT="[\e[1;36mNOTE\e[0m]"
+COK="[\e[1;32mOK\e[0m]"
+CER="[\e[1;31mERROR\e[0m]"
+CAT="[\e[1;37mATTENTION\e[0m]"
+CWR="[\e[1;35mWARNING\e[0m]"
+CAC="[\e[1;33mACTION\e[0m]"
+
+# set some expectations for the user
+echo -e "$CNT - You are about to execute a script that would attempt to setup rDock."
+sleep 1
+# get the current folder
+current_dir=$(pwd)
+if [ ! -d "${current_dir}" ]; then
+    echo -e "$CER ${current_dir} does not exist! No changes were made to your system."
+    exit
+fi
+
+# Pulling the rDock image
+echo -e "$CNT - Pulling rDock from Docker Hub..."
+docker pull biopod/rdock:2013.1
+
+# give the user an option to exit setup
+install_path=/usr/local/bin/
+echo -e "$CAT - Scripts will be installed to the ${install_path}"
+read -rep $'[\e[1;33mACTION\e[0m] - Would you like to continue with the setup (y,n) ' CONTINST
+if [[ $CONTINST == "Y" || $CONTINST == "y" ]]; then
+    echo -e "$CNT - Setup starting..."
+else
+    echo -e "$CWR - You need to manually add the executables (rdock-env,rdock-run,rdock-test) to your PATH."
+    exit
+fi
+
+# install rdock to path
+echo -e "$CNT - Installing to ${install_path}"
+sudo cp -a ./bin/rdock-env ./bin/rdock-run ./bin/rdock-test ${install_path}
+
+# Script is done
+echo -e "$COK - Setup has completed!"
