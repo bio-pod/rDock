@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-
-image_tag="biopod/rdock:2013.1"
+image_tag=biopod/rdock:2013.1
 
 echo "Starting ${image_tag} container in current dir -> $(pwd)"
 docker run --rm -it \

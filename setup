@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
-
-# The follwoing will attempt to compile and install rDock
 # IMPORTANT - This script is meant to run on a Linux machine
+name="rDock"
+image_tag="biopod/rdock:2013.1"
+script_prefix="rdock"
+install_path=/usr/local/bin/
 
 # set some colors
 CNT="[\e[1;36mNOTE\e[0m]"
@@ -12,7 +14,7 @@ CWR="[\e[1;35mWARNING\e[0m]"
 CAC="[\e[1;33mACTION\e[0m]"
 
 # set some expectations for the user
-echo -e "$CNT - You are about to execute a script that would attempt to setup rDock."
+echo -e "$CNT - You are about to execute a script that would attempt to setup ${name}."
 sleep 1
 # get the current folder
 current_dir=$(pwd)
@@ -21,24 +23,26 @@ if [ ! -d "${current_dir}" ]; then
     exit
 fi
 
-# Pulling the rDock image
-echo -e "$CNT - Pulling rDock from Docker Hub..."
-docker pull biopod/rdock:2013.1
-
 # give the user an option to exit setup
-install_path=/usr/local/bin/
-echo -e "$CAT - Scripts will be installed to the ${install_path}"
+echo -e "$CAT - Image (${image_tag}) will be pulled from Docker Hub and scripts (${script_prefix}-env,${script_prefix}-run,${script_prefix}-test) will be installed to the ${install_path}"
 read -rep $'[\e[1;33mACTION\e[0m] - Would you like to continue with the setup (y,n) ' CONTINST
 if [[ $CONTINST == "Y" || $CONTINST == "y" ]]; then
-    echo -e "$CNT - Setup starting..."
+    echo -e "$CNT - Setup started."
 else
-    echo -e "$CWR - You need to manually add the executables (rdock-env,rdock-run,rdock-test) to your PATH."
+    echo -e "$CWR - Aborting setup."
     exit
 fi
 
-# install rdock to path
-echo -e "$CNT - Installing to ${install_path}"
-sudo cp -a ./bin/rdock-env ./bin/rdock-run ./bin/rdock-test ${install_path}
+# pull the image
+echo -e "$CNT - Pulling ${image_tag} from Docker Hub."
+docker pull ${image_tag}
 
-# Script is done
+# install scripts
+echo -e "$CNT - Installing ${script_prefix}-env, ${script_prefix}-run, and ${script_prefix}-test to ${install_path}."
+for suffix in env run test
+do
+    sed -i '/^image_tag/d' ./bin/${script_prefix}-${suffix}
+    sed -i "1 aimage_tag=${image_tag}" ./bin/${script_prefix}-${suffix}
+done
+sudo cp -a ./bin/${script_prefix}-env ./bin/${script_prefix}-run ./bin/${script_prefix}-test ${install_path} && \
 echo -e "$COK - Setup has completed!"
