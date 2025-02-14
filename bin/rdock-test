@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-image_tag=biopod/rdock:2013.1
-
-echo "Testing ${image_tag}..."
-docker run --rm -it ${image_tag} \
-       /bin/bash -c 'cd ${RBT_ROOT}/build && make test'
-
