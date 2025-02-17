@@ -12,7 +12,7 @@ usage() {
   echo "-d 'cmd'  run specified command in detach mode" 1>&2
 }
 
-while getopts ":hterd" opt; do
+while getopts ":hter:d:" opt; do
   case "${opt}" in
   h)
     usage
